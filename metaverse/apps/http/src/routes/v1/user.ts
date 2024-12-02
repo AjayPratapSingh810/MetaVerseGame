@@ -1,9 +1,40 @@
 import { Router } from "express";
-
+import client from "@repo/db/client";
+import { userMiddleware } from "../../middleware/user";
+import { UpdateMetadataSchema } from "../../types";
 export const userRouter = Router();
 
-userRouter.post("/metadata", (req, res) => {});
+userRouter.post("/metadata", userMiddleware, async (req, res) => {
+  const parsedData = UpdateMetadataSchema.safeParse(req.body);
+  if (!parsedData.success) {
+    res.status(400).json({ message: "Validation failed" });
+    return;
+  }
+  await client.user.update({
+    where: { id: req.userId },
+    data: { avatarId: parsedData.data.avatarId },
+  });
+  res.json({ message: "Update metadata successfully" });
+});
+userRouter.get("/metadata/bulk", async (req, res) => {
+  const userIdString = (req.query.ids ?? "[]") as string;
+  const userIds = userIdString.slice(1, userIdString?.length - 1).split(",");
+  const metadata = await client.user.findMany({
+    where: {
+      id: {
+        in: userIds,
+      },
+    },
+    select: {
+      avatar: true,
+      id: true,
+    },
+  });
 
-userRouter.get("/avatars", (req, res) => {});
-
-userRouter.get("/metadata", (req, res) => {});
+  res.json({
+    avatars: metadata.map((m) => ({
+      userId: m.id,
+      avatarId: m.avatar?.imageUrl,
+    })),
+  });
+});
