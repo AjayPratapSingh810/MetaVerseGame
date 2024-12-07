@@ -18,10 +18,6 @@ export const userMiddleware = (
       role: string;
       userId: string;
     };
-    if (decoded.role !== "User") {
-      res.status(403).json({ message: "Forbidden" });
-      return;
-    }
     req.userId = decoded.userId;
     next();
   } catch (err) {
