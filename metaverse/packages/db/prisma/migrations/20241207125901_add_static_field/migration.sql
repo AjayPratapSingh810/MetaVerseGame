@@ -40,6 +40,7 @@ CREATE TABLE "Element" (
     "id" TEXT NOT NULL,
     "width" INTEGER NOT NULL,
     "height" INTEGER NOT NULL,
+    "static" BOOLEAN NOT NULL,
     "imageUrl" TEXT NOT NULL,
 
     CONSTRAINT "Element_pkey" PRIMARY KEY ("id")
@@ -51,6 +52,7 @@ CREATE TABLE "Map" (
     "width" INTEGER NOT NULL,
     "height" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
+    "thumbnail" TEXT NOT NULL,
 
     CONSTRAINT "Map_pkey" PRIMARY KEY ("id")
 );
